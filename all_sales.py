@@ -35,7 +35,7 @@ def organize_db(df):
     return df
 
 def save_db(df):
-    df.to_csv('all_sales.csv', index = False)
+    df.to_csv('files/all_sales.csv', index = False)
 
 def weeklyfy(df, n_week):
     week = []
