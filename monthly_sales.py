@@ -3,8 +3,6 @@ import pandas as pd
 df = pd.read_csv('files/all_sales.csv')
 
 df_slice = df.iloc[:,4:]
-month1 = df_slice[df['month'] == 1].sum()
-month2 = df_slice[df['month'] == 2].sum()
 month_indexes = []
 year = pd.DataFrame()
 
@@ -14,6 +12,5 @@ for i in range(12):
     month_indexes.append('Month ' + str(i+1))
 
 year = year.set_axis(month_indexes, axis=1)
-
+year = year.T
 year.to_csv('files/monthly_sales.csv')
-
