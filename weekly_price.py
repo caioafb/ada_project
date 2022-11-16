@@ -32,7 +32,7 @@ for i in sales_df['week'].unique():
 
         prices = df['week ' + str(i-1)].values.copy()
         prices *= variation_function
-        df['week ' + str(i)] = prices
+        df['week ' + str(i)] = round(prices,2)
 
 df = df.T
 df.to_csv('files/weekly_price.csv')
