@@ -2,38 +2,43 @@ import pandas as pd
 import random
 import math
 
-sales_df = pd.read_csv('files/all_sales.csv')
+def get_weekly_price():
+    """
+    It takes the mean sales of the previous two weeks, and uses that to calculate a variation function,
+    which is then used to calculate the prices for the next week
+    """
+    sales_df = pd.read_csv('files/all_sales.csv')
 
-df_slice = sales_df.iloc[:,4:]
+    df_slice = sales_df.iloc[:,4:]
 
-indexes = list(df_slice.columns.values)
-df = pd.DataFrame(index=indexes)
+    indexes = list(df_slice.columns.values)
+    df = pd.DataFrame(index=indexes)
 
-for i in sales_df['week'].unique():
-    if i == 1:
-        prices = []
-        for j in indexes:
-            if int(j.split("_")[1]) < 8:
-                prices.append(round(random.uniform(10,75),2))
-            else:
-                prices.append(round(random.uniform(50,115),2))
-        df['week ' + str(i)] = prices
+    for i in sales_df['week'].unique():
+        if i == 1:
+            prices = []
+            for j in indexes:
+                if int(j.split("_")[1]) < 8:
+                    prices.append(round(random.uniform(10,75),2))
+                else:
+                    prices.append(round(random.uniform(50,115),2))
+            df[f'week {str(i)}'] = prices
 
-    elif i == 2:
-        df['week ' + str(i)] = df['week ' + str(i-1)].copy()
-        
-    else:
-        mean_sales_week_0 = df_slice[sales_df['week'] == i-2].mean()
-        mean_sales_week_1 = df_slice[sales_df['week'] == i-1].mean()
+        elif i == 2:
+            df[f'week {str(i)}'] = df[f'week {str(i - 1)}'].copy()
 
-        variation = (mean_sales_week_1 - mean_sales_week_0)/mean_sales_week_0
+        else:
+            mean_sales_week_0 = df_slice[sales_df['week'] == i-2].mean()
+            mean_sales_week_1 = df_slice[sales_df['week'] == i-1].mean()
 
-        variation_function = (0.5 + 1/(1 + (math.e ** (-variation)))).fillna(1)
+            variation = (mean_sales_week_1 - mean_sales_week_0)/mean_sales_week_0
 
-        prices = df['week ' + str(i-1)].values.copy()
-        prices *= variation_function
-        df['week ' + str(i)] = round(prices,2)
+            variation_function = (0.5 + 1/(1 + (math.e ** (-variation)))).fillna(1)
 
-df = df.T
-df.to_csv('files/weekly_price.csv')
+            prices = df[f'week {str(i - 1)}'].values.copy()
+            prices *= variation_function
+            df[f'week {str(i)}'] = round(prices,2)
+
+    df = df.T
+    df.to_csv('files/weekly_price.csv')
 

@@ -1,16 +1,14 @@
 import pandas as pd
 
-df = pd.read_csv('files/all_sales.csv')
+def get_monthly_sales():
+    """
+    It reads in the all_sales.csv file, groups the data by month, sums the sales for each month, and
+    then writes the results to a new file called monthly_sales.csv
+    """
+    df = pd.read_csv('files/all_sales.csv')
 
-df_slice = df.iloc[:,4:]
-month_indexes = []
-year = pd.DataFrame()
+    df = df.groupby('month').sum()
+    df = df.reset_index().drop(['week'], axis=1)
+    df = round(df,2)
 
-for i in range(12):
-    month = df_slice[df['month'] == i+1].sum().round(2)
-    year = pd.concat([year,month], axis=1)
-    month_indexes.append('Month ' + str(i+1))
-
-year = year.set_axis(month_indexes, axis=1)
-year = year.T
-year.to_csv('files/monthly_sales.csv')
+    df.to_csv('files/monthly_sales.csv', index = False)
